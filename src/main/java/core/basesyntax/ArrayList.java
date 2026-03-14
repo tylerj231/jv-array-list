@@ -76,7 +76,7 @@ public class ArrayList<T> implements List<T> {
                 return remove(i);
             }
         }
-        throw new NoSuchElementException("No such element found by provided index");
+        throw new NoSuchElementException("No such element found by provided value");
 
     }
 
@@ -99,7 +99,9 @@ public class ArrayList<T> implements List<T> {
     }
 
     private void grow() {
-        int newCapacity = elementData.length + (elementData.length / 2);
+        int newCapacity = elementData.length == 1
+                ? elementData.length + 1
+                : elementData.length + (elementData.length / 2);
         Object [] tempArr = new Object[newCapacity];
         System.arraycopy(elementData, 0, tempArr, 0, elementData.length);
         elementData = tempArr;
