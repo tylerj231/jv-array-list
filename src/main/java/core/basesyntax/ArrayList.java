@@ -3,8 +3,8 @@ package core.basesyntax;
 import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
-    private Object[] elementData = new Object[10];
-    private int capacity = elementData.length;
+    private static final int DEFAULT_CAPACITY = 10;
+    private Object[] elementData = new Object[DEFAULT_CAPACITY];
     private int size;
 
     @Override
@@ -37,15 +37,17 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public T get(int index) throws ArrayListIndexOutOfBoundsException {
-        if (index < 0 || index > size - 1) {
+        if (isInvalidValidIndex(index)) {
             throw new ArrayListIndexOutOfBoundsException("Invalid index");
         }
+
         return (T) elementData[index];
+
     }
 
     @Override
     public void set(T value, int index) throws ArrayListIndexOutOfBoundsException {
-        if (index < 0 || index > size - 1) {
+        if (isInvalidValidIndex(index)) {
             throw new ArrayListIndexOutOfBoundsException("Invalid index");
         }
         elementData[index] = value;
@@ -53,14 +55,11 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        if (index < 0 || index > size - 1) {
+        if (isInvalidValidIndex(index)) {
             throw new ArrayListIndexOutOfBoundsException("Invalid index");
         }
         final T element = (T) elementData[index];
-        for (int i = index + 1; i < size; i++) {
-            elementData[i - 1] = elementData[i];
-        }
-        elementData[size - 1] = null;
+        System.arraycopy(elementData, index + 1, elementData, index, size - index - 1);
         size--;
         return element;
     }
@@ -92,19 +91,21 @@ public class ArrayList<T> implements List<T> {
     }
 
     private boolean isFull() {
-        return capacity == this.size;
+        return elementData.length == this.size;
+    }
+
+    private boolean isInvalidValidIndex(int index) {
+        return index < 0 || index > size - 1;
     }
 
     private void grow() {
-        capacity = capacity + (capacity / 2);
-        Object [] tempArr = new Object[capacity];
+        int newCapacity = elementData.length + (elementData.length / 2);
+        Object [] tempArr = new Object[newCapacity];
         System.arraycopy(elementData, 0, tempArr, 0, elementData.length);
         elementData = tempArr;
     }
 
     private void shift(int index) {
-        for (int i = size - 1; i > index - 1; i--) {
-            elementData[i + 1] = elementData[i];
-        }
+        System.arraycopy(elementData, index, elementData, index + 1, size - index);
     }
 }
